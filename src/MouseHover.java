@@ -25,7 +25,7 @@ public class MouseHover {
             Thread.sleep(2000);
             driver.findElement(By.xpath("//*[@id=\"div-hover\"]/div[1]/div/a")).click();
             Thread.sleep(2000);
-            //Printe Text of Alert and Close it
+            //Printe Text of Alert and Close itchrome
             Alert alert = driver.switchTo().alert();
             System.out.println(alert.getText());
             alert.accept();
