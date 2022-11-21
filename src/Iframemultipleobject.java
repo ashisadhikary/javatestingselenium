@@ -12,6 +12,9 @@ public class Iframemultipleobject {
             //1. Open Page
             driver.get("https://thulotechnology.github.io/SampleTestWebsite/");
             driver.manage().window().maximize();
+            //Size (number of frames in a page)
+            int size = driver.findElements(By.tagName("iframe")).size();
+            System.out.println(size);
             //2. Switch to ourframe and click the first link
             driver.switchTo().frame("ourframe");
             WebElement link1 = driver.findElement(By.xpath("//*[@id=\"content-wrapper\"]/ul/li[1]/a"));
