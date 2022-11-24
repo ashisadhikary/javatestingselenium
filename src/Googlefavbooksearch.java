@@ -2,73 +2,61 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
-
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.TimeUnit;
 
 public class Googlefavbooksearch {
     public static void main(String[] args) {
         try {
+            //System.setProperty("webdriver.gecko.driver", "C:/automation/firefox/geckodriver.exe");
+            //WebDriver driver = new FirefoxDriver();
+
             System.setProperty("webdriver.chrome.driver", "C:/automation/chrome/chromedriver.exe");
-            //new Object for webdriver
             WebDriver driver = new ChromeDriver();
             driver.get("http://google.com");
             driver.manage().window().maximize();
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-            //create a webElement object to search the searchbox in google
-            // The name q is the name of the name assigned to the searchbox by google.com
-            WebElement searchbox = driver.findElement(By.name("q"));
-            searchbox.sendKeys("The End of History");
-            searchbox.submit();
-            //driver.manage().window().wait();
-            //Thread.sleep(3000);
-            driver.findElement(By.xpath("/html/body/div[4]/div[2]/div/div[2]/div/div/div[1]/div/div/div/a")).click();
-            //Print the size of iframes
-            int frame_size = driver.findElements(By.tagName("iframe")).size();
-            System.out.println(frame_size);
-
-            //First create a list of the items inside the nine-dots
-            //1. change to the new frame 2. select the xpath of the frame which has that list and 3. find the list
-            //We have to make sure that we select the locator into a webelelement under which there is this list
-            //driver.switchTo().frame(app);
-            //Its hard to locate xpath of the menu inside the google as it disappears once the inspect is clicked. We have to open the menu and
-            //right click on the menu and select inspect which will open the <ul> in the inspect menu which is the desired locator.
-            //To find the xpath we select the list (ul) which contains the list as List <WebElement> than we print the <li> inside it.
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            //Open the Google apps icon
+            driver.findElement(By.xpath("//*[@id=\"gbwa\"]/div/a")).click();
+            //Now change to the frame inside this APP, the name of this frame is APP.
+            //To find that iframe name, after clicking the nine dots and opening menus, right click on the new frame. As shown in
+            //guru99.com the presence of frame in the click menu validates its a frame. Inside the inspect page press Ctrl + f and
+            //type iframe. It will traverse you to different frames and the name of the frame.
             driver.switchTo().frame("app");
-            WebElement frame_1 = driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/ul[1]"));
-            //WebElement frame_1 = driver.findElement(By.xpath("//*[@id=\"gb\"]/div/div[2]/iframe"));
-            List<WebElement> item_names = frame_1.findElements(By.tagName("li"));
-            for (WebElement c : item_names)
-                System.out.println(c.getText());
-            System.out.println("---------------------");
-            //Now clicking the Account Menu.
-            WebElement element1 = driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/ul[1]/li[1]/a"));
-            System.out.println(element1.getText());
-            //System.out.println(driver.getTitle());
-            element1.click();
-            System.out.println("---------------");
-            //Now using mouse hover to click another menu. 1. navigate back 2. a new frame pops up. press Ctrl+f and type iframe in inspect menu to select
-            //appropriate frame name. here it is callout. 3. again press the nine dots and use mouse hover to press some other menu now (Youtube).
+            //Print the names of the app menus first. To print the list, first we have to select the component that has all the lists contained
+            //Here, the main app frame defines a ul which has different menus as lists. So the below xpath is the xpath of ul.
+            //after selecting ul we collect the list of menus through common factors on it, here it is <li> tag
+            WebElement iframe1 = driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/ul[1]"));
+            List<WebElement> menu_names = iframe1.findElements(By.tagName("li"));
+            for (WebElement a: menu_names) {
+                System.out.println(a.getText());
+                }
+            System.out.println("--------------------");
+            //Now click the Account menu inside this frame. Find the xpath manually.
+            driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/ul[1]/li[1]/a")).click();
+            //Now the second part is to traverse back into the main page and use mouse hover to open another menu tab youtube
             driver.navigate().back();
-            driver.switchTo().frame(0); //go to the root frame
-            System.out.println(driver.getCurrentUrl());
-            //select the callout frame
-            driver.switchTo().frame("callout");//switch to the frame
-            WebElement no_Thanks = driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/div/div[2]/div[2]/button"));
-            System.out.println(no_Thanks.getText());
-            no_Thanks.click();
-            //Now shift to the 9 dots frame
+            //now get the size of the frame
+            System.out.println(driver.findElements(By.tagName("iframe")).size());
+            //The frame selected is still "APP" so we can just click the menu but this time we use mouse hover
+            //first click on the nine dots. We have to go to the earlier frame, here we will use mouse hover to click
+            driver.switchTo().frame(0);
+            driver.navigate().refresh(); //refresh the page because it showed error of not identifying the iframe
+            Actions click = new Actions(driver);
+            WebElement nine_dots = driver.findElement(By.cssSelector("#gbwa > div > a")); //locating nine dots with another tag
+            click.moveToElement(nine_dots);
+            click.click().perform();
+            //clicking the youtube menucd 
             driver.switchTo().frame("app");
-            driver.findElement(By.xpath("/html/body/div[4]/div[2]/div/div[2]/div/div/div[1]/div/div/div/a")).click(); //click the nine dots
-            //now locate youtube by xpath inside the 9 menu
-            WebElement element2_hover = driver.findElement(By.xpath("//*[@id=\"yDmH0d\"]/c-wiz/div/div/c-wiz/div/div/ul[1]/li[4]/a"));
-            System.out.println(element2_hover.getText());
-            //use hover and click perform
-            Actions action = new Actions(driver);
-            action.moveToElement(element2_hover).click().perform();
+            driver.findElement(By.cssSelector("#yDmH0d > c-wiz > div > div > c-wiz > div > div > ul.LVal7b.u4RcUd > li:nth-child(4) > a > div > span")).click();
         }catch (Exception e){
-            e.notifyAll();
+            System.out.println(e.getMessage());
         }
 
     }
