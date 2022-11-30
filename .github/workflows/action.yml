@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: printname
-      - run: echo "Ashis Adhikary" 
+        run: echo "Ashis Adhikary" 
